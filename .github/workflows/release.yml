@@ -205,7 +205,7 @@ jobs:
 
           # Upload to R2
           aws s3 cp backend/cuda-release/voicebox-server-cuda-${PLATFORM}.exe \
-            s3://voicebox-releases/cuda/${VERSION}/voicebox-server-cuda-${PLATFORM}.exe \
+            s3://voicebox/cuda/${VERSION}/voicebox-server-cuda-${PLATFORM}.exe \
             --endpoint-url $R2_ENDPOINT \
             --acl public-read
 

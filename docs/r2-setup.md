@@ -7,7 +7,7 @@ The CUDA binary (2.4GB) is hosted on Cloudflare R2 at `downloads.voicebox.sh` in
 ## R2 Bucket Configuration
 
 ✅ **Completed:**
-- Bucket created: `voicebox-releases`
+- Bucket created: `voicebox`
 - Custom domain configured: `downloads.voicebox.sh`
 
 ## GitHub Secrets Required
@@ -71,7 +71,7 @@ Value: https://<your-account-id>.r2.cloudflarestorage.com
 After CI uploads, the bucket will have this structure:
 
 ```
-voicebox-releases/
+voicebox/
 └── cuda/
     ├── v0.1.12/
     │   └── voicebox-server-cuda-x86_64-pc-windows-msvc.exe
@@ -112,7 +112,7 @@ pip install awscli
 # Test upload (use a small test file first)
 echo "test" > test.txt
 aws s3 cp test.txt \
-  s3://voicebox-releases/test/test.txt \
+  s3://voicebox/test/test.txt \
   --endpoint-url $R2_ENDPOINT \
   --acl public-read
 
@@ -121,7 +121,7 @@ curl https://downloads.voicebox.sh/test/test.txt
 
 # If successful, try the actual CUDA binary
 aws s3 cp backend/dist/voicebox-server-cuda.exe \
-  s3://voicebox-releases/cuda/v0.1.12-test/voicebox-server-cuda-x86_64-pc-windows-msvc.exe \
+  s3://voicebox/cuda/v0.1.12-test/voicebox-server-cuda-x86_64-pc-windows-msvc.exe \
   --endpoint-url $R2_ENDPOINT \
   --acl public-read
 ```
@@ -163,7 +163,7 @@ The workflow now:
     R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
   run: |
     aws s3 cp backend/cuda-release/voicebox-server-cuda-*.exe \
-      s3://voicebox-releases/cuda/${VERSION}/... \
+      s3://voicebox/cuda/${VERSION}/... \
       --endpoint-url $R2_ENDPOINT \
       --acl public-read
 ```
@@ -172,7 +172,7 @@ The workflow now:
 
 Monitor your R2 usage:
 
-**Cloudflare Dashboard → R2 → voicebox-releases → Metrics**
+**Cloudflare Dashboard → R2 → voicebox → Metrics**
 
 Expected costs (per month):
 - Storage: 2.4GB × $0.015/GB = **$0.036**
@@ -219,7 +219,7 @@ Or set bucket default permissions in R2 Dashboard.
 ✅ **Recommended:**
 - Object Read & Write only
 - No admin permissions needed
-- Scoped to `voicebox-releases` bucket only
+- Scoped to `voicebox` bucket only
 
 ❌ **Avoid:**
 - Account-wide permissions
@@ -242,11 +242,11 @@ Optional: Delete old CUDA binaries to save storage costs
 
 ```bash
 # List all versions
-aws s3 ls s3://voicebox-releases/cuda/ \
+aws s3 ls s3://voicebox/cuda/ \
   --endpoint-url $R2_ENDPOINT
 
 # Delete old version
-aws s3 rm s3://voicebox-releases/cuda/v0.1.0/ \
+aws s3 rm s3://voicebox/cuda/v0.1.0/ \
   --recursive \
   --endpoint-url $R2_ENDPOINT
 ```

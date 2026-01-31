@@ -48,7 +48,7 @@ echo "Test upload configuration:"
 echo "  Version: $VERSION"
 echo "  Platform: $PLATFORM"
 echo "  Endpoint: $R2_ENDPOINT"
-echo "  Bucket: voicebox-releases"
+echo "  Bucket: voicebox"
 echo "  Path: cuda/$VERSION/$FILENAME"
 echo ""
 
@@ -63,7 +63,7 @@ echo ""
 echo "Uploading to R2..."
 
 aws s3 cp "$CUDA_BINARY" \
-    "s3://voicebox-releases/cuda/${VERSION}/${FILENAME}" \
+    "s3://voicebox/cuda/${VERSION}/${FILENAME}" \
     --endpoint-url "$R2_ENDPOINT" \
     --acl public-read
 
