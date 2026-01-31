@@ -28,9 +28,9 @@ jobs:
             provider: "pytorch-cuda"
             python-version: "3.12"
           # PyTorch CPU provider (Linux)
-          - platform: "ubuntu-22.04"
-            provider: "pytorch-cpu"
-            python-version: "3.12"
+          # - platform: "ubuntu-22.04"
+          #   provider: "pytorch-cpu"
+          #   python-version: "3.12"
           # PyTorch CUDA provider (Linux) - large binary, uploaded to R2
           - platform: "ubuntu-22.04"
             provider: "pytorch-cuda"
@@ -268,10 +268,10 @@ jobs:
             - **Windows**: Download the `.msi` installer - requires downloading a TTS provider on first use
             - **Linux**: Download the `.AppImage` or `.deb` package - requires downloading a TTS provider on first use
 
-            ### TTS Providers (Windows/Linux)
+            ### TTS Providers
             Windows and Linux users will be prompted to download a TTS provider on first launch:
-            - **PyTorch CPU** (~300MB) - Works on any system
-            - **PyTorch CUDA** (~2.4GB) - 4-5x faster on NVIDIA GPUs
+            - **Windows**: PyTorch CPU (~300MB) or PyTorch CUDA (~2.4GB for NVIDIA GPUs)
+            - **Linux**: PyTorch CUDA (~2.4GB) - requires NVIDIA GPU
 
             The app includes automatic updates - future updates will be installed automatically.
           releaseDraft: true
