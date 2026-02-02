@@ -177,6 +177,8 @@ export function ProviderSettings() {
   console.log('currentProvider', currentProvider);
   const selectedProvider = currentProvider as ProviderType;
 
+  const isStarting = startMutation.isPending;
+
   return (
     <>
       <Card>
@@ -184,17 +186,33 @@ export function ProviderSettings() {
           <CardTitle>TTS Provider</CardTitle>
           <CardDescription>Choose how Voicebox generates speech</CardDescription>
         </CardHeader>
-        <CardContent>
-          <RadioGroup value={selectedProvider} onValueChange={(value) => handleStart(value)}>
+        <CardContent className="relative">
+          {isStarting && (
+            <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-10 rounded-lg">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Icon icon="svg-spinners:ring-resize" className="h-5 w-5" />
+                <span>Starting provider...</span>
+              </div>
+            </div>
+          )}
+          <RadioGroup
+            value={selectedProvider}
+            onValueChange={(value) => handleStart(value)}
+            disabled={isStarting}
+          >
             {/* PyTorch CUDA */}
             <div
               className={`flex items-center justify-between py-2 ${isMacOS() ? 'opacity-50' : ''}`}
             >
               <div className="flex items-center space-x-3 flex-1">
-                <RadioGroupItem value="pytorch-cuda" id="cuda" disabled={isMacOS()} />
+                <RadioGroupItem
+                  value="pytorch-cuda"
+                  id="cuda"
+                  disabled={isMacOS() || isStarting}
+                />
                 <Label
                   htmlFor="cuda"
-                  className={`flex-1 ${isMacOS() ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                  className={`flex-1 ${isMacOS() || isStarting ? 'cursor-not-allowed' : 'cursor-pointer'}`}
                 >
                   <div className="font-medium">PyTorch CUDA (NVIDIA GPU)</div>
                   <div className="text-sm text-muted-foreground">
@@ -208,7 +226,7 @@ export function ProviderSettings() {
                   <Button
                     onClick={() => handleDownload('pytorch-cuda')}
                     size="sm"
-                    disabled={downloadingProvider === 'pytorch-cuda'}
+                    disabled={downloadingProvider === 'pytorch-cuda' || isStarting}
                   >
                     {downloadingProvider === 'pytorch-cuda' ? (
                       <Icon icon="svg-spinners:ring-resize" className="h-4 w-4 animate-spin" />
@@ -222,12 +240,22 @@ export function ProviderSettings() {
                 )}
                 {installedProviders.includes('pytorch-cuda') &&
                   selectedProvider !== 'pytorch-cuda' && (
-                    <Button onClick={() => handleStart('pytorch-cuda')} size="sm" variant="outline">
+                    <Button
+                      onClick={() => handleStart('pytorch-cuda')}
+                      size="sm"
+                      variant="outline"
+                      disabled={isStarting}
+                    >
                       Start
                     </Button>
                   )}
                 {installedProviders.includes('pytorch-cuda') && (
-                  <Button onClick={() => handleDelete('pytorch-cuda')} size="sm" variant="ghost">
+                  <Button
+                    onClick={() => handleDelete('pytorch-cuda')}
+                    size="sm"
+                    variant="ghost"
+                    disabled={isStarting}
+                  >
                     <HugeiconsIcon icon={Delete01Icon} size={16} className="h-4 w-4" />
                   </Button>
                 )}
@@ -237,8 +265,8 @@ export function ProviderSettings() {
             {/* PyTorch CPU */}
             <div className="flex items-center justify-between py-2">
               <div className="flex items-center space-x-3 flex-1">
-                <RadioGroupItem value="pytorch-cpu" id="cpu" />
-                <Label htmlFor="cpu" className="flex-1 cursor-pointer">
+                <RadioGroupItem value="pytorch-cpu" id="cpu" disabled={isStarting} />
+                <Label htmlFor="cpu" className={`flex-1 ${isStarting ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
                   <div className="font-medium">PyTorch CPU</div>
                   <div className="text-sm text-muted-foreground">
                     Works on any system, slower inference
@@ -251,7 +279,7 @@ export function ProviderSettings() {
                   <Button
                     onClick={() => handleDownload('pytorch-cpu')}
                     size="sm"
-                    disabled={downloadingProvider === 'pytorch-cpu'}
+                    disabled={downloadingProvider === 'pytorch-cpu' || isStarting}
                   >
                     {downloadingProvider === 'pytorch-cpu' ? (
                       <Icon icon="svg-spinners:ring-resize" className="h-4 w-4 animate-spin" />
@@ -265,12 +293,22 @@ export function ProviderSettings() {
                 )}
                 {installedProviders.includes('pytorch-cpu') &&
                   selectedProvider !== 'pytorch-cpu' && (
-                    <Button onClick={() => handleStart('pytorch-cpu')} size="sm" variant="outline">
+                    <Button
+                      onClick={() => handleStart('pytorch-cpu')}
+                      size="sm"
+                      variant="outline"
+                      disabled={isStarting}
+                    >
                       Start
                     </Button>
                   )}
                 {installedProviders.includes('pytorch-cpu') && (
-                  <Button onClick={() => handleDelete('pytorch-cpu')} size="sm" variant="ghost">
+                  <Button
+                    onClick={() => handleDelete('pytorch-cpu')}
+                    size="sm"
+                    variant="ghost"
+                    disabled={isStarting}
+                  >
                     <HugeiconsIcon icon={Delete01Icon} size={16} className="h-4 w-4" />
                   </Button>
                 )}
@@ -280,8 +318,8 @@ export function ProviderSettings() {
             {/* MLX bundled (macOS Apple Silicon only) */}
             {isMacOS() && (
               <div className="flex items-center space-x-3 py-2">
-                <RadioGroupItem value="apple-mlx" id="mlx" />
-                <Label htmlFor="mlx" className="flex-1 cursor-pointer">
+                <RadioGroupItem value="apple-mlx" id="mlx" disabled={isStarting} />
+                <Label htmlFor="mlx" className={`flex-1 ${isStarting ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
                   <div className="font-medium">MLX (Apple Silicon)</div>
                   <div className="text-sm text-muted-foreground">
                     Bundled with the app - optimized for M-series chips
