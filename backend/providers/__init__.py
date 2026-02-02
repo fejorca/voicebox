@@ -71,14 +71,22 @@ class ProviderManager:
                 logger.info(f"Provider binary: {provider_path}")
                 logger.info(f"Data directory: {get_data_dir()}")
 
+                # Create log files for provider output (easier debugging on Windows)
+                logs_dir = get_data_dir() / "logs"
+                logs_dir.mkdir(exist_ok=True)
+                stdout_log = logs_dir / f"{provider_type}-stdout.log"
+                stderr_log = logs_dir / f"{provider_type}-stderr.log"
+
+                logger.info(f"Provider logs will be written to: {logs_dir}")
+
                 process = subprocess.Popen(
                     [
                         str(provider_path),
                         "--port", str(port),
                         "--data-dir", str(get_data_dir()),
                     ],
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
+                    stdout=open(stdout_log, 'w'),
+                    stderr=open(stderr_log, 'w'),
                     text=True,
                     bufsize=1,
                 )
@@ -88,23 +96,24 @@ class ProviderManager:
                 try:
                     await self._wait_for_provider_health(base_url, timeout=30)
                 except TimeoutError as e:
-                    # Capture subprocess output for debugging
-                    stdout_lines = []
-                    stderr_lines = []
+                    # Read log files for debugging (works on all platforms unlike select)
+                    stdout_content = ""
+                    stderr_content = ""
 
-                    # Try to read available output
-                    import select
                     try:
-                        if process.stdout and select.select([process.stdout], [], [], 0)[0]:
-                            stdout_lines = process.stdout.readlines()
-                        if process.stderr and select.select([process.stderr], [], [], 0)[0]:
-                            stderr_lines = process.stderr.readlines()
-                    except Exception:
-                        # select might not work on all platforms
-                        pass
+                        if stdout_log.exists():
+                            stdout_content = stdout_log.read_text()
+                        if stderr_log.exists():
+                            stderr_content = stderr_log.read_text()
+                    except Exception as read_err:
+                        logger.error(f"Failed to read provider logs: {read_err}")
 
-                    logger.error(f"Provider failed to start. Stdout: {stdout_lines}")
-                    logger.error(f"Provider failed to start. Stderr: {stderr_lines}")
+                    logger.error(f"Provider failed to start within 30 seconds")
+                    logger.error(f"Check logs at: {logs_dir}")
+                    if stdout_content:
+                        logger.error(f"Stdout: {stdout_content[-2000:]}")  # Last 2000 chars
+                    if stderr_content:
+                        logger.error(f"Stderr: {stderr_content[-2000:]}")  # Last 2000 chars
 
                     # Terminate the process
                     process.terminate()
@@ -113,15 +122,18 @@ class ProviderManager:
                     except subprocess.TimeoutExpired:
                         process.kill()
 
-                    raise
+                    # Raise with log file location for user
+                    raise TimeoutError(
+                        f"Provider {provider_type} failed to start. Check logs at: {logs_dir}"
+                    )
 
                 # Create LocalProvider instance
                 self.active_provider = LocalProvider(base_url)
                 self._provider_process = process
                 self._provider_port = port
 
-                # Start background task to log subprocess output
-                asyncio.create_task(self._log_subprocess_output(process))
+                # Logs are written directly to files (stdout_log, stderr_log)
+                # No need for background task - users can check {logs_dir} for debugging
             else:
                 # No external binary, use bundled provider (if available)
                 if provider_type == "pytorch-cpu":
