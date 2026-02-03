@@ -1,4 +1,4 @@
-import type { PlatformFilesystem, FileFilter } from '@/platform/types';
+import type { FileFilter, PlatformFilesystem } from '@/platform/types';
 
 export const webFilesystem: PlatformFilesystem = {
   async saveFile(filename: string, blob: Blob, _filters?: FileFilter[]) {

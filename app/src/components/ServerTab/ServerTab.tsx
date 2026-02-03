@@ -1,8 +1,8 @@
 import { ConnectionForm } from '@/components/ServerSettings/ConnectionForm';
 import { DataFolders } from '@/components/ServerSettings/DataFolders';
+import { ProviderSettings } from '@/components/ServerSettings/ProviderSettings';
 import { ServerStatus } from '@/components/ServerSettings/ServerStatus';
 import { UpdateStatus } from '@/components/ServerSettings/UpdateStatus';
-import { ProviderSettings } from '@/components/ServerSettings/ProviderSettings';
 import { usePlatform } from '@/platform/PlatformContext';
 
 export function ServerTab() {
