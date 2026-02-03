@@ -189,7 +189,7 @@ export function FloatingGenerateBox({
       }}
     >
       <motion.div
-        className="bg-background/30 backdrop-blur-2xl border border-accent/20 rounded-[2rem] shadow-2xl hover:bg-background/40 hover:border-accent/20 transition-all duration-300 overflow-hidden p-3"
+        className="bg-background/30 backdrop-blur-2xl border border-accent/20 rounded-[2rem] shadow-2xl hover:bg-background/40 hover:border-accent/20 transition-all duration-300 p-3"
         transition={{ duration: 0.6, ease: 'easeInOut' }}
       >
         <Form {...form}>
@@ -276,7 +276,7 @@ export function FloatingGenerateBox({
                                   field.ref(node);
                                 }
                               }}
-                              placeholder="Add delivery instructions..."
+                              placeholder="e.g. very happy and excited"
                               className="resize-none bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none focus:ring-0 outline-none ring-0 rounded-2xl text-sm placeholder:text-muted-foreground/60 w-full"
                               style={{
                                 minHeight: isExpanded ? '100px' : '32px',
@@ -296,18 +296,27 @@ export function FloatingGenerateBox({
               </motion.div>
 
               <div className="relative shrink-0">
-                <Button
-                  type="submit"
-                  disabled={isPending || !selectedProfileId}
-                  className="h-10 w-10 rounded-full bg-accent hover:bg-accent/90 hover:scale-105 text-accent-foreground shadow-lg hover:shadow-accent/50 transition-all duration-200"
-                  size="icon"
-                >
-                  {isPending ? (
-                    <Icon icon="svg-spinners:ring-resize" className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <HugeiconsIcon icon={SparklesIcon} size={16} className="h-4 w-4" />
-                  )}
-                </Button>
+                <div className="group relative">
+                  <Button
+                    type="submit"
+                    disabled={isPending || !selectedProfileId}
+                    className="h-10 w-10 rounded-full bg-accent hover:bg-accent/90 hover:scale-105 text-accent-foreground shadow-lg hover:shadow-accent/50 transition-all duration-200"
+                    size="icon"
+                  >
+                    {isPending ? (
+                      <Icon icon="svg-spinners:ring-resize" className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <HugeiconsIcon icon={SparklesIcon} size={16} className="h-4 w-4" />
+                    )}
+                  </Button>
+                  <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 whitespace-nowrap rounded-md bg-popover px-3 py-1.5 text-xs text-popover-foreground border border-border opacity-0 transition-opacity group-hover:opacity-100 z-[9999]">
+                    {isPending
+                      ? 'Generating...'
+                      : !selectedProfileId
+                        ? 'Select a voice profile first'
+                        : 'Generate speech'}
+                  </span>
+                </div>
                 <AnimatePresence>
                   {isExpanded && (
                     <motion.div
@@ -317,20 +326,25 @@ export function FloatingGenerateBox({
                       transition={{ duration: 0.2 }}
                       className="absolute top-0 right-[calc(100%+0.5rem)]"
                     >
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => setIsInstructMode(!isInstructMode)}
-                        className={cn(
-                          'h-10 w-10 rounded-full transition-all duration-200',
-                          isInstructMode
-                            ? 'bg-accent text-accent-foreground border border-accent hover:bg-accent/90'
-                            : 'bg-card border border-border hover:bg-background/50',
-                        )}
-                      >
-                        <HugeiconsIcon icon={TextSquareIcon} size={16} className="h-4 w-4" />
-                      </Button>
+                      <div className="group relative">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => setIsInstructMode(!isInstructMode)}
+                          className={cn(
+                            'h-10 w-10 rounded-full transition-all duration-200',
+                            isInstructMode
+                              ? 'bg-accent text-accent-foreground border border-accent hover:bg-accent/90'
+                              : 'bg-card border border-border hover:bg-background/50',
+                          )}
+                        >
+                          <HugeiconsIcon icon={TextSquareIcon} size={16} className="h-4 w-4" />
+                        </Button>
+                        <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 whitespace-nowrap rounded-md bg-popover px-3 py-1.5 text-xs text-popover-foreground border border-border opacity-0 transition-opacity group-hover:opacity-100 z-[9999]">
+                          Fine tune instructions
+                        </span>
+                      </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
