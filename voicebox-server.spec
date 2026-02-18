@@ -9,6 +9,8 @@ datas += collect_data_files('qwen_tts')
 datas += copy_metadata('qwen-tts')
 hiddenimports += collect_submodules('qwen_tts')
 hiddenimports += collect_submodules('jaraco')
+hiddenimports += collect_submodules('sqlalchemy')
+hiddenimports += collect_submodules('greenlet')
 
 
 a = Analysis(

@@ -68,6 +68,9 @@ def build_server():
         # Fix for pkg_resources and jaraco namespace packages
         '--hidden-import', 'pkg_resources.extern',
         '--collect-submodules', 'jaraco',
+        # Collect submodules for sqlalchemy and greenlet to ensure all dynamic imports are found
+        '--collect-submodules', 'sqlalchemy',
+        '--collect-submodules', 'greenlet',
     ])
 
     # Add MLX-specific imports if building on Apple Silicon
